@@ -34,11 +34,7 @@ This opens your browser, authorizes with Strava, and gives you the exact command
 
 ### 3. Restart Claude Code
 
-Close and reopen Claude Code. You can now ask things like:
-
-- "what are my running stats this year?"
-- "show my last 5 activities"
-- "get details for activity 12345678"
+Close and reopen Claude Code. You're ready to go.
 
 ## Example questions
 
