@@ -1,0 +1,30 @@
+{
+  "name": "strava-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for Strava - query activities, stats, and athlete data from Claude Code",
+  "type": "module",
+  "bin": {
+    "strava-mcp-server": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "strava",
+    "claude",
+    "ai",
+    "running"
+  ],
+  "author": "Michael Hutchinson",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "typescript": "^5.8.3"
+  }
+}
