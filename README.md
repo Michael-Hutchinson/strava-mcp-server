@@ -4,60 +4,52 @@ An MCP server that connects Claude to your Strava data. Query your activities, s
 
 ## Tools
 
-| Tool | Description |
-|------|-------------|
-| `get_athlete` | Athlete profile, gear (shoes/bikes), follower counts |
-| `get_stats` | Running totals: all-time, year-to-date, last 4 weeks |
-| `get_activities` | List recent activities with pace, distance, HR, elevation. Supports pagination and date filtering |
-| `get_activity` | Full activity detail by ID: splits, best efforts, heart rate zones, gear |
+| Tool               | Description                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------ |
+| `get_athlete`       | Athlete profile, gear (shoes/bikes), follower counts                                             |
+| `get_stats`         | Running totals: all-time, year-to-date, last 4 weeks                                             |
+| `get_activities`    | List recent activities with pace, distance, HR, elevation. Supports pagination and date filtering |
+| `get_activity`      | Full activity detail by ID: splits, best efforts, heart rate, gear                               |
 
-## Setup
+## Quick start
 
-### 1. Create a Strava API application
+### 1. Create a Strava API app
 
-Go to [strava.com/settings/api](https://www.strava.com/settings/api) and create an app. You'll need the Client ID and Client Secret.
+Go to [strava.com/settings/api](https://www.strava.com/settings/api) and create an app.
 
-### 2. Get a refresh token
+Set the **Authorization Callback Domain** to `localhost`.
 
-Follow [Strava's OAuth guide](https://developers.strava.com/docs/getting-started/#oauth) to authorize your app and get a refresh token with `read,activity:read` scopes.
+Note your **Client ID** and **Client Secret**.
 
-### 3. Configure Claude Code
-
-Add to your `~/.claude/settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "strava": {
-      "command": "node",
-      "args": ["/path/to/strava-mcp-server/dist/index.js"],
-      "env": {
-        "STRAVA_CLIENT_ID": "your_client_id",
-        "STRAVA_CLIENT_SECRET": "your_client_secret",
-        "STRAVA_REFRESH_TOKEN": "your_refresh_token"
-      }
-    }
-  }
-}
-```
-
-### 4. Build
+### 2. Run the setup
 
 ```bash
-npm install
-npm run build
+npx strava-mcp-server setup
 ```
 
-## Usage
+This opens your browser, authorizes with Strava, and gives you the exact command to add the server to Claude Code.
 
-Once configured, Claude Code can access your Strava data:
+### 3. Restart Claude Code
 
+Close and reopen Claude Code. You can now ask things like:
+
+- "what are my running stats this year?"
+- "show my last 5 activities"
+- "get details for activity 12345678"
+
+## Manual setup
+
+If you prefer to configure manually:
+
+```bash
+claude mcp add strava \
+  -e STRAVA_CLIENT_ID=your_client_id \
+  -e STRAVA_CLIENT_SECRET=your_client_secret \
+  -e STRAVA_REFRESH_TOKEN=your_refresh_token \
+  -- npx -y strava-mcp-server
 ```
-> get my running stats for this year
-> show my last 5 activities
-> get details for activity 12345678
-> what's my total mileage this year?
-```
+
+See [Strava's OAuth guide](https://developers.strava.com/docs/getting-started/#oauth) for how to obtain a refresh token manually.
 
 ## License
 

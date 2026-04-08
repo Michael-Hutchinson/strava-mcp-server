@@ -58,6 +58,12 @@ server.tool(
 );
 
 async function main() {
+  if (process.argv[2] === "setup") {
+    const { runSetup } = await import("./setup.js");
+    await runSetup();
+    return;
+  }
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
 }
