@@ -3,7 +3,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { getAthlete, getStats, getActivities, getActivity } from "./strava.js";
+import { getAthlete, getStats, getActivities, getActivity, getActivityStreams, getPersonalRecords, getStarredSegments } from "./strava.js";
 
 const server = new McpServer({
   name: "strava-mcp-server",
@@ -53,6 +53,43 @@ server.tool(
   },
   async ({ id }) => {
     const text = await getActivity(id);
+    return { content: [{ type: "text", text }] };
+  }
+);
+
+server.tool(
+  "get_activity_streams",
+  "Get time-series data for an activity: heart rate, pace, cadence, and altitude over time. Useful for analyzing effort distribution and pacing strategy.",
+  {
+    id: z.number().describe("Strava activity ID"),
+    types: z
+      .array(z.enum(["heartrate", "velocity_smooth", "cadence", "altitude"]))
+      .optional()
+      .default(["heartrate", "velocity_smooth", "cadence", "altitude"])
+      .describe("Stream types to fetch (default: all)"),
+  },
+  async ({ id, types }) => {
+    const text = await getActivityStreams(id, types);
+    return { content: [{ type: "text", text }] };
+  }
+);
+
+server.tool(
+  "get_personal_records",
+  "Get your personal best times across standard distances: 400m, 1K, 1 mile, 5K, 10K, half marathon, marathon, and more.",
+  {},
+  async () => {
+    const text = await getPersonalRecords();
+    return { content: [{ type: "text", text }] };
+  }
+);
+
+server.tool(
+  "get_starred_segments",
+  "Get your starred/favourite Strava segments with your personal best effort on each.",
+  {},
+  async () => {
+    const text = await getStarredSegments();
     return { content: [{ type: "text", text }] };
   }
 );

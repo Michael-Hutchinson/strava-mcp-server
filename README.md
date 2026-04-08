@@ -4,12 +4,15 @@ An MCP server that connects Claude to your Strava data. Query your activities, s
 
 ## Tools
 
-| Tool               | Description                                                                                      |
-| ------------------- | ------------------------------------------------------------------------------------------------ |
-| `get_athlete`       | Athlete profile, gear (shoes/bikes), follower counts                                             |
-| `get_stats`         | Running totals: all-time, year-to-date, last 4 weeks                                             |
-| `get_activities`    | List recent activities with pace, distance, HR, elevation. Supports pagination and date filtering |
-| `get_activity`      | Full activity detail by ID: splits, best efforts, heart rate, gear                               |
+| Tool                     | Description                                                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------------------ |
+| `get_athlete`            | Athlete profile, gear (shoes/bikes), follower counts                                             |
+| `get_stats`              | Running totals: all-time, year-to-date, last 4 weeks                                             |
+| `get_activities`         | List recent activities with pace, distance, HR, elevation. Supports pagination and date filtering |
+| `get_activity`           | Full activity detail by ID: splits, best efforts, heart rate, gear                               |
+| `get_activity_streams`   | Time-series data: heart rate, pace, cadence, altitude over the course of an activity              |
+| `get_personal_records`   | Personal best times across standard distances (5K, 10K, half marathon, marathon, etc.)            |
+| `get_starred_segments`   | Your favourite Strava segments with your personal best effort on each                             |
 
 ## Quick start
 

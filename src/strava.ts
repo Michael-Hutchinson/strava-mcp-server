@@ -225,3 +225,156 @@ export async function getActivity(id: number): Promise<string> {
 
   return lines.filter(Boolean).join("\n");
 }
+
+export async function getActivityStreams(
+  id: number,
+  types: string[] = ["heartrate", "velocity_smooth", "cadence", "altitude"],
+): Promise<string> {
+  const keys = types.join(",");
+  const data = await stravaGet(`/activities/${id}/streams`, {
+    keys,
+    key_type: "time",
+  }) as Array<{ type: string; data: number[] }>;
+
+  if (!data || data.length === 0) return "No stream data available for this activity.";
+
+  const timeStream = data.find((s) => s.type === "time");
+  const streams = data.filter((s) => s.type !== "time");
+
+  if (streams.length === 0) return "No matching streams found.";
+
+  // Downsample large datasets to ~100 points
+  const sampleSize = streams[0].data.length;
+  const step = sampleSize > 100 ? Math.floor(sampleSize / 100) : 1;
+
+  const lines = [`Stream data (${sampleSize} points, showing every ${step}${step > 1 ? "th" : ""}):`];
+
+  // Header
+  const headers = ["time_s", ...streams.map((s) => formatStreamName(s.type))];
+  lines.push(headers.join("\t"));
+
+  // Rows
+  for (let i = 0; i < sampleSize; i += step) {
+    const time = timeStream ? String(timeStream.data[i]) : String(i);
+    const values = streams.map((s) => formatStreamValue(s.type, s.data[i]));
+    lines.push([time, ...values].join("\t"));
+  }
+
+  return lines.join("\n");
+}
+
+function formatStreamName(type: string): string {
+  switch (type) {
+    case "heartrate": return "hr_bpm";
+    case "velocity_smooth": return "pace_/km";
+    case "cadence": return "cadence_spm";
+    case "altitude": return "altitude_m";
+    default: return type;
+  }
+}
+
+function formatStreamValue(type: string, value: number): string {
+  if (value === null || value === undefined) return "N/A";
+  switch (type) {
+    case "velocity_smooth": return formatPace(value).replace(" /km", "");
+    case "altitude": return String(Math.round(value));
+    case "heartrate":
+    case "cadence": return String(Math.round(value));
+    default: return String(value);
+  }
+}
+
+export async function getPersonalRecords(): Promise<string> {
+  // Fetch recent activities in batches to find best efforts
+  const allEfforts: Map<string, { time: number; date: string; activityName: string; activityId: number }> = new Map();
+
+  for (let page = 1; page <= 5; page++) {
+    const activities = await stravaGet("/athlete/activities", {
+      page: String(page),
+      per_page: "50",
+    }) as Array<Record<string, unknown>>;
+
+    if (activities.length === 0) break;
+
+    for (const activity of activities) {
+      if (activity.type !== "Run") continue;
+
+      const detail = await stravaGet(`/activities/${String(activity.id)}`) as Record<string, unknown>;
+      const efforts = detail.best_efforts as Array<Record<string, unknown>> | undefined;
+      if (!efforts) continue;
+
+      for (const effort of efforts) {
+        if (effort.pr_rank !== 1) continue;
+        const name = String(effort.name);
+        const time = effort.moving_time as number;
+        const existing = allEfforts.get(name);
+
+        if (!existing || time < existing.time) {
+          allEfforts.set(name, {
+            time,
+            date: formatDate(effort.start_date_local as string),
+            activityName: String(activity.name),
+            activityId: activity.id as number,
+          });
+        }
+      }
+    }
+  }
+
+  if (allEfforts.size === 0) return "No personal records found.";
+
+  // Sort by distance (approximate from name)
+  const distanceOrder = [
+    "400m", "1/2 mile", "1K", "1 mile", "2 mile",
+    "5K", "10K", "15K", "10 mile", "20K",
+    "Half-Marathon", "30K", "Marathon", "50K",
+  ];
+
+  const sorted = [...allEfforts.entries()].sort((a, b) => {
+    const ia = distanceOrder.indexOf(a[0]);
+    const ib = distanceOrder.indexOf(b[0]);
+    return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+  });
+
+  const lines = ["Personal Records:"];
+  for (const [name, pr] of sorted) {
+    lines.push(`  ${name}: ${formatDuration(pr.time)} (${pr.date}, "${pr.activityName}", ID: ${pr.activityId})`);
+  }
+
+  return lines.join("\n");
+}
+
+export async function getStarredSegments(): Promise<string> {
+  const segments = await stravaGet("/segments/starred") as Array<Record<string, unknown>>;
+
+  if (!segments || segments.length === 0) return "No starred segments found.";
+
+  const lines = ["Starred segments:"];
+
+  for (const seg of segments) {
+    const segLines = [
+      `${String(seg.name)}`,
+      `  Distance: ${formatDistance(seg.distance as number)}`,
+      `  Avg grade: ${String(seg.average_grade)}%`,
+      `  Elevation: +${Math.round(seg.total_elevation_gain as number)}m`,
+      `  Type: ${String(seg.activity_type)}`,
+      `  City: ${String(seg.city)}, ${String(seg.state)}`,
+      `  ID: ${String(seg.id)}`,
+    ];
+
+    // Fetch personal effort if available
+    const efforts = await stravaGet(`/segment_efforts`, {
+      segment_id: String(seg.id),
+      per_page: "1",
+    }) as Array<Record<string, unknown>>;
+
+    if (efforts && efforts.length > 0) {
+      const best = efforts[0];
+      segLines.push(`  Your best: ${formatDuration(best.moving_time as number)} (${formatDate(best.start_date_local as string)})`);
+    }
+
+    lines.push(segLines.join("\n"));
+  }
+
+  return lines.join("\n\n");
+}
