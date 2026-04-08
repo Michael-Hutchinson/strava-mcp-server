@@ -1,5 +1,5 @@
 {
-  "name": "strava-mcp-server",
+  "name": "@michaelhutchinson/strava-mcp-server",
   "version": "1.0.0",
   "description": "MCP server for Strava - query activities, stats, and athlete data from Claude Code",
   "type": "module",

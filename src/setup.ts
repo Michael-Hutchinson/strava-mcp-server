@@ -121,7 +121,7 @@ export async function runSetup() {
 
     console.log("  Done! Run this command to add the server to Claude Code:\n");
     console.log(
-      `  claude mcp add strava -e STRAVA_CLIENT_ID=${clientId} -e STRAVA_CLIENT_SECRET=${clientSecret} -e STRAVA_REFRESH_TOKEN=${tokens.refresh_token} -- npx -y strava-mcp-server\n`
+      `  claude mcp add strava -e STRAVA_CLIENT_ID=${clientId} -e STRAVA_CLIENT_SECRET=${clientSecret} -e STRAVA_REFRESH_TOKEN=${tokens.refresh_token} -- npx -y @michaelhutchinson/strava-mcp-server\n`
     );
   } catch (err) {
     console.error(`\n  Setup failed: ${(err as Error).message}`);

@@ -24,7 +24,7 @@ Note your **Client ID** and **Client Secret**.
 ### 2. Run the setup
 
 ```bash
-npx strava-mcp-server setup
+npx @michaelhutchinson/strava-mcp-server setup
 ```
 
 This opens your browser, authorizes with Strava, and gives you the exact command to add the server to Claude Code.
@@ -46,7 +46,7 @@ claude mcp add strava \
   -e STRAVA_CLIENT_ID=your_client_id \
   -e STRAVA_CLIENT_SECRET=your_client_secret \
   -e STRAVA_REFRESH_TOKEN=your_refresh_token \
-  -- npx -y strava-mcp-server
+  -- npx -y @michaelhutchinson/strava-mcp-server
 ```
 
 See [Strava's OAuth guide](https://developers.strava.com/docs/getting-started/#oauth) for how to obtain a refresh token manually.
