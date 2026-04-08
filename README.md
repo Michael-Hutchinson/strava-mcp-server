@@ -40,6 +40,32 @@ Close and reopen Claude Code. You can now ask things like:
 - "show my last 5 activities"
 - "get details for activity 12345678"
 
+## Example questions
+
+Once set up, you can ask Claude things like:
+
+**Stats and records**
+- "What are my running stats this year?"
+- "What's my 5K personal best?"
+- "How does my mileage this month compare to last month?"
+
+**Activities**
+- "Show my last 5 runs"
+- "What did I run last weekend?"
+- "Get the details for my most recent activity"
+- "Show my runs from January"
+
+**Analysis**
+- "How was my heart rate during my last long run?"
+- "Show my pace splits for activity 12345678"
+- "Am I running faster this year compared to last year?"
+
+**Segments**
+- "Show my starred segments"
+- "What's my best time on my favourite segment?"
+
+Claude picks the right tools automatically based on your question.
+
 ## Manual setup
 
 If you prefer to configure manually:
