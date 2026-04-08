@@ -96,13 +96,13 @@ export async function getAthlete(): Promise<string> {
 
   const lines = [
     `${data.firstname} ${data.lastname}`,
-    data.city ? `Location: ${data.city}, ${data.state}, ${data.country}` : null,
+    data.city ? `Location: ${String(data.city)}, ${String(data.state)}, ${String(data.country)}` : null,
     `Followers: ${data.follower_count} | Following: ${data.friend_count}`,
     shoes.length > 0
-      ? `Shoes: ${shoes.map((s) => `${s.name} (${formatDistance(s.distance)})`).join(", ")}`
+      ? "Shoes: " + shoes.map((s) => `${s.name} (${formatDistance(s.distance)})`).join(", ")
       : null,
     bikes.length > 0
-      ? `Bikes: ${bikes.map((b) => `${b.name} (${formatDistance(b.distance)})`).join(", ")}`
+      ? "Bikes: " + bikes.map((b) => `${b.name} (${formatDistance(b.distance)})`).join(", ")
       : null,
   ];
 
@@ -174,46 +174,54 @@ export async function getActivities(
     .join("\n\n");
 }
 
-export async function getActivity(id: number): Promise<string> {
-  const a = await stravaGet(`/activities/${id}`) as Record<string, unknown>;
-
-  const lines = [
-    `${a.name}`,
-    `Type: ${a.type} | ${formatDate(a.start_date_local as string)}`,
-    a.description ? `Description: ${a.description}` : null,
+function formatActivitySummary(a: Record<string, unknown>): Array<string | null> {
+  return [
+    String(a.name),
+    `Type: ${String(a.type)} | ${formatDate(a.start_date_local as string)}`,
+    a.description ? `Description: ${String(a.description)}` : null,
     "",
     `Distance: ${formatDistance(a.distance as number)}`,
     `Duration: ${formatDuration(a.moving_time as number)} (elapsed: ${formatDuration(a.elapsed_time as number)})`,
     `Pace: ${formatPace(a.average_speed as number)}`,
     `Elevation: +${Math.round(a.total_elevation_gain as number)}m`,
-    a.average_heartrate ? `Heart rate: ${Math.round(a.average_heartrate as number)} avg / ${a.max_heartrate} max bpm` : null,
+    a.average_heartrate ? `Heart rate: ${Math.round(a.average_heartrate as number)} avg / ${String(a.max_heartrate)} max bpm` : null,
     a.average_cadence ? `Cadence: ${Math.round(a.average_cadence as number)} spm` : null,
-    a.calories ? `Calories: ${a.calories}` : null,
-    a.suffer_score ? `Suffer score: ${a.suffer_score}` : null,
-    a.device_name ? `Device: ${a.device_name}` : null,
-    a.gear ? `Gear: ${(a.gear as Record<string, unknown>).name}` : null,
+    a.calories ? `Calories: ${String(a.calories)}` : null,
+    a.suffer_score ? `Suffer score: ${String(a.suffer_score)}` : null,
+    a.device_name ? `Device: ${String(a.device_name)}` : null,
+    a.gear ? `Gear: ${String((a.gear as Record<string, unknown>).name)}` : null,
     "",
-    `Kudos: ${a.kudos_count} | Comments: ${a.comment_count} | PRs: ${a.pr_count}`,
+    `Kudos: ${String(a.kudos_count)} | Comments: ${String(a.comment_count)} | PRs: ${String(a.pr_count)}`,
   ];
+}
 
-  // Best efforts
-  const efforts = a.best_efforts as Array<Record<string, unknown>> | undefined;
-  if (efforts && efforts.length > 0) {
-    lines.push("", "Best efforts:");
-    for (const e of efforts) {
-      const rank = e.pr_rank ? ` (PR #${e.pr_rank})` : "";
-      lines.push(`  ${e.name}: ${formatDuration(e.moving_time as number)}${rank}`);
-    }
+function formatBestEfforts(efforts: Array<Record<string, unknown>> | undefined): string[] {
+  if (!efforts || efforts.length === 0) return [];
+  const lines = ["", "Best efforts:"];
+  for (const e of efforts) {
+    const rank = e.pr_rank ? ` (PR #${String(e.pr_rank)})` : "";
+    lines.push(`  ${String(e.name)}: ${formatDuration(e.moving_time as number)}${rank}`);
   }
+  return lines;
+}
 
-  // Splits
-  const splits = a.splits_metric as Array<Record<string, number>> | undefined;
-  if (splits && splits.length > 1) {
-    lines.push("", "Splits (per km):");
-    for (const s of splits) {
-      lines.push(`  km ${s.split}: ${formatPace(s.average_speed)} | ${Math.round(s.elevation_difference)}m elev`);
-    }
+function formatSplits(splits: Array<Record<string, number>> | undefined): string[] {
+  if (!splits || splits.length <= 1) return [];
+  const lines = ["", "Splits (per km):"];
+  for (const s of splits) {
+    lines.push(`  km ${s.split}: ${formatPace(s.average_speed)} | ${Math.round(s.elevation_difference)}m elev`);
   }
+  return lines;
+}
+
+export async function getActivity(id: number): Promise<string> {
+  const a = await stravaGet(`/activities/${id}`) as Record<string, unknown>;
+
+  const lines = [
+    ...formatActivitySummary(a),
+    ...formatBestEfforts(a.best_efforts as Array<Record<string, unknown>> | undefined),
+    ...formatSplits(a.splits_metric as Array<Record<string, number>> | undefined),
+  ];
 
   return lines.filter(Boolean).join("\n");
 }
