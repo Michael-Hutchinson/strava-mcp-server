@@ -1,5 +1,6 @@
 import { createServer } from "node:http";
 import { createInterface } from "node:readline";
+import { exec } from "node:child_process";
 
 const STRAVA_AUTH_URL = "https://www.strava.com/oauth/authorize";
 const STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token";
@@ -17,7 +18,6 @@ function ask(question: string): Promise<string> {
 }
 
 function openBrowser(url: string) {
-  const { exec } = require("node:child_process");
   let cmd: string;
   if (process.platform === "darwin") {
     cmd = `open "${url}"`;
