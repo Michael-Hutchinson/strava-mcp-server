@@ -36,6 +36,28 @@ This opens your browser, authorizes with Strava, and gives you the exact command
 
 Close and reopen Claude Code. You're ready to go.
 
+### Claude Desktop
+
+Also works with Claude Desktop. Add this to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "strava": {
+      "command": "npx",
+      "args": ["-y", "@michaelhutchinson/strava-mcp-server"],
+      "env": {
+        "STRAVA_CLIENT_ID": "your_client_id",
+        "STRAVA_CLIENT_SECRET": "your_client_secret",
+        "STRAVA_REFRESH_TOKEN": "your_refresh_token"
+      }
+    }
+  }
+}
+```
+
+Claude Desktop can render charts and graphs from your running data.
+
 ## Example questions
 
 Once set up, you can ask Claude things like:
