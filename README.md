@@ -104,6 +104,6 @@ See [Strava's OAuth guide](https://developers.strava.com/docs/getting-started/#o
 
 ## License
 
-MIT — covers the code in this repository only.
+MIT. The licence covers the code in this repository only.
 
 This is an unofficial, community-built tool. It is not affiliated with, endorsed by, or sponsored by Strava. Strava and the Strava logo are trademarks of Strava, Inc. Your use of the Strava API through this tool is subject to the [Strava API Agreement](https://www.strava.com/legal/api).
