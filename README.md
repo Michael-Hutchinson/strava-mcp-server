@@ -1,5 +1,9 @@
 # strava-mcp-server
 
+[![npm version](https://img.shields.io/npm/v/%40michaelhutchinson%2Fstrava-mcp-server)](https://www.npmjs.com/package/@michaelhutchinson/strava-mcp-server)
+[![npm downloads](https://img.shields.io/npm/dm/%40michaelhutchinson%2Fstrava-mcp-server)](https://www.npmjs.com/package/@michaelhutchinson/strava-mcp-server)
+[![license](https://img.shields.io/npm/l/%40michaelhutchinson%2Fstrava-mcp-server)](./LICENSE)
+
 An MCP server that connects Claude to your Strava data. Query your activities, stats, and athlete profile directly from Claude Code.
 
 ## Tools
@@ -100,4 +104,6 @@ See [Strava's OAuth guide](https://developers.strava.com/docs/getting-started/#o
 
 ## License
 
-MIT
+MIT — covers the code in this repository only.
+
+This is an unofficial, community-built tool. It is not affiliated with, endorsed by, or sponsored by Strava. Strava and the Strava logo are trademarks of Strava, Inc. Your use of the Strava API through this tool is subject to the [Strava API Agreement](https://www.strava.com/legal/api).
